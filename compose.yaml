@@ -1,6 +1,7 @@
 # 개발 스택. Vite 개발 서버가 /api를 backend로 프록시한다(vite.config.js 참고).
 # 그래서 브라우저는 운영과 동일하게 같은 출처의 VITE_API_BASE_URL=/api를 쓴다.
 # 여기서 호스트 포트를 여는 것은 로컬 디버깅 용도이며, 운영은 db/backend를 비공개로 둔다.
+# 호스트 포트가 다른 프로젝트와 겹치면 .env의 *_HOST_PORT 값으로 바꾼다(기본 5432/8000/5173).
 services:
   db:
     image: postgres:16-alpine
@@ -9,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${DB_HOST_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -25,7 +26,7 @@ services:
     environment:
       TZ: ${TZ}
     ports:
-      - "8000:8000"
+      - "${BACKEND_HOST_PORT:-8000}:8000"
     volumes:
       - ./backend:/app
     depends_on:
@@ -42,7 +43,7 @@ services:
       # Vite 개발 프록시 대상(서버 측에서만 사용, 번들에 포함되지 않음):
       BACKEND_ORIGIN: http://backend:8000
     ports:
-      - "5173:5173"
+      - "${FRONTEND_HOST_PORT:-5173}:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
