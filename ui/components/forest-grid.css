@@ -1,0 +1,8 @@
+.tf-forest {font-family:var(--tf-font,system-ui);color:var(--tf-bark,#49382d)}
+.tf-forest-scene {position:relative;aspect-ratio:1.38;max-width:760px;margin:auto;isolation:isolate;background:radial-gradient(ellipse at 50% 70%,#e4e7d9,transparent 68%);overflow:visible}
+.tf-cell {position:absolute;width:15%;height:11%;transform:translate(-50%,-50%);pointer-events:none}
+.tf-tile {position:absolute;inset:0;width:100%;height:100%;padding:0;cursor:pointer;pointer-events:auto;border:0;background:#bdc7aa;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);box-shadow:inset 0 0 0 1px #899078}
+.tf-tile:hover,.tf-tile:focus-visible {background:#e7c787;outline:4px solid #49382d;outline-offset:-4px}
+.tf-tile[aria-pressed="true"] {background:#d58c36}
+.tf-tile:disabled {cursor:default;opacity:.8}
+.tf-tree {position:absolute;width:82%;height:auto;left:9%;bottom:32%;pointer-events:none}

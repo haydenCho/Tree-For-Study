@@ -1,0 +1,32 @@
+/* Minimal global styles for stage 0. The full token system (ui/tokens.css),
+   Pretendard font, and screen styles are wired in when building real screens (stage 1). */
+:root {
+  color-scheme: light;
+  --forest: #4f6547;
+  --bark: #49382d;
+  --sand: #ded9cb;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: #ded9cb;
+  color: #49382d;
+}
+
+.stage0 {
+  max-width: 560px;
+  margin: 12vh auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(73, 56, 45, 0.12);
+}
+
+.stage0 h1 { margin: 0 0 0.25rem; color: #4f6547; }
+.stage0 .muted { color: #899078; margin-top: 0; }
+.status { font-weight: 600; }
+.status.ok { color: #4f6547; }
+.status.fail { color: #b2432f; }

@@ -1,0 +1,19 @@
+# Production reverse proxy. Replace :80 with your real domain to get automatic HTTPS,
+# e.g.  tree.example.com { ... }  — Caddy will provision a certificate.
+# Set the actual domain before deploy; until then this serves plain HTTP on :80.
+:80 {
+	encode gzip
+
+	# API traffic -> FastAPI. Caddy adds X-Forwarded-For with the real client IP;
+	# FastAPI trusts it only from this proxy (TRUSTED_PROXY_IPS).
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+
+	# Everything else -> built SPA. Unknown paths fall back to index.html.
+	handle {
+		root * /srv/www
+		try_files {path} /index.html
+		file_server
+	}
+}

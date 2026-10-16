@@ -1,0 +1,19 @@
+@font-face {font-family:'Pretendard';src:url('./fonts/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap;}
+:root {
+  --tf-fern: #4f6547;
+  --tf-chanterelle: #d58c36;
+  --tf-moss: #899078;
+  --tf-cream: #ded9cb;
+  --tf-bark: #49382d;
+  --tf-paper: #f7f5ef;
+  --tf-muted: #665e50;
+  --tf-line: #c9c6b8;
+  --tf-radius: 20px;
+  --tf-space-1: 4px;
+  --tf-space-2: 8px;
+  --tf-space-3: 12px;
+  --tf-space-4: 16px;
+  --tf-space-6: 24px;
+  --tf-space-8: 32px;
+  --tf-font: 'Pretendard', 'Malgun Gothic', system-ui, sans-serif;
+}
