@@ -1,16 +1,16 @@
-# Production reverse proxy. Replace :80 with your real domain to get automatic HTTPS,
-# e.g.  tree.example.com { ... }  — Caddy will provision a certificate.
-# Set the actual domain before deploy; until then this serves plain HTTP on :80.
+# 운영 리버스 프록시. :80을 실제 도메인으로 바꾸면 자동 HTTPS가 적용된다.
+# 예) tree.example.com { ... } — Caddy가 인증서를 자동 발급한다.
+# 배포 전에 실제 도메인을 설정한다. 그 전까지는 :80에서 평문 HTTP로 서빙한다.
 :80 {
 	encode gzip
 
-	# API traffic -> FastAPI. Caddy adds X-Forwarded-For with the real client IP;
-	# FastAPI trusts it only from this proxy (TRUSTED_PROXY_IPS).
+	# API 트래픽 -> FastAPI. Caddy가 실제 클라이언트 IP를 X-Forwarded-For로 추가하고,
+	# FastAPI는 이 프록시(TRUSTED_PROXY_IPS)에서 온 경우에만 그 값을 신뢰한다.
 	handle /api/* {
 		reverse_proxy backend:8000
 	}
 
-	# Everything else -> built SPA. Unknown paths fall back to index.html.
+	# 그 외 전부 -> 빌드된 SPA. 알 수 없는 경로는 index.html로 폴백한다.
 	handle {
 		root * /srv/www
 		try_files {path} /index.html

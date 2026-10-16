@@ -1,7 +1,7 @@
-# Production stack for EC2. Only Caddy is published (80/443). db and backend have
-# NO host ports — reachable only on the internal compose network. Caddy terminates
-# HTTPS, serves the built frontend, and reverse-proxies /api -> backend. FastAPI
-# trusts the forwarded client IP only from Caddy (TRUSTED_PROXY_IPS).
+# EC2용 운영 스택. Caddy만 공개(80/443)한다. db와 backend는 호스트 포트가 없고
+# 내부 compose 네트워크에서만 접근된다. Caddy가 HTTPS를 종료하고 빌드된 프론트엔드를
+# 서빙하며 /api를 backend로 프록시한다. FastAPI는 Caddy(TRUSTED_PROXY_IPS)에서 전달된
+# 클라이언트 IP만 신뢰한다.
 services:
   db:
     image: postgres:16-alpine
@@ -35,7 +35,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-    # Produces static assets consumed by Caddy via the shared volume.
+    # 빌드된 정적 산출물을 Caddy와 공유하는 볼륨으로 내보낸다.
     volumes:
       - frontend_dist:/dist
     restart: "no"

@@ -1,4 +1,5 @@
-"""ORM models. Populated from stage 1 (users, auth_token_sessions, focus_sessions, ...).
+"""ORM 모델. 1단계부터 채운다(users, auth_token_sessions, focus_sessions, ...).
 
-Import model modules here so Alembic autogenerate sees them via app.core.db.Base.metadata.
+Alembic autogenerate가 app.core.db.Base.metadata로 테이블을 인식하도록
+모델 모듈을 여기서 import 한다.
 """

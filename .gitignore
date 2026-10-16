@@ -1,11 +1,11 @@
-# Secrets — never commit
+# 비밀 — 절대 커밋하지 않음
 .env
 .env.*
 !.env.example
 *.pem
 *.key
 
-# Python
+# 파이썬
 __pycache__/
 *.py[cod]
 .venv/
@@ -21,16 +21,16 @@ dist-ssr/
 *.local
 .vite/
 
-# Editor / OS
+# 에디터 / OS
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 
-# Build artifacts from the planning package
+# 기획 패키지 빌드 산출물
 design/design-preview-standalone.html
 
-# Backups / logs / data
+# 백업 / 로그 / 데이터
 *.log
 backups/
 pgdata/

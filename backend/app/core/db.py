@@ -1,7 +1,7 @@
-"""Async SQLAlchemy engine and session factory.
+"""비동기 SQLAlchemy 엔진과 세션 팩토리.
 
-Models are declared against `Base`. Alembic migrations (stage 1+) drive the schema;
-the app does not auto-create tables.
+모델은 `Base`를 상속해 선언한다. 스키마는 Alembic 마이그레이션(1단계 이후)이
+관리하며, 앱이 테이블을 자동 생성하지 않는다.
 """
 from collections.abc import AsyncGenerator
 
@@ -22,6 +22,6 @@ SessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSe
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    """FastAPI dependency yielding a request-scoped async session."""
+    """요청 단위 비동기 세션을 제공하는 FastAPI 의존성."""
     async with SessionLocal() as session:
         yield session

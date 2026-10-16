@@ -1,3 +1,4 @@
+# 개발용 이미지. Vite 개발 서버를 구동한다.
 FROM node:20-alpine
 WORKDIR /app
 COPY package.json ./

@@ -1,7 +1,7 @@
-"""Liveness and readiness endpoints.
+"""생존(liveness) / 준비(readiness) 엔드포인트.
 
-- /api/health  — process is up (no dependencies touched).
-- /api/ready   — dependencies reachable (DB round-trip). Used by compose/EC2 checks.
+- /api/health — 프로세스가 떠 있음 (의존성 미접근).
+- /api/ready  — 의존성 접근 가능 (DB 왕복). compose/EC2 점검에 사용.
 """
 from fastapi import APIRouter, Depends
 from sqlalchemy import text

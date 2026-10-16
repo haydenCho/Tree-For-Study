@@ -1,7 +1,7 @@
-"""FastAPI application entry point.
+"""FastAPI 애플리케이션 진입점.
 
-All routes live under /api so the frontend uses a single same-origin base
-(VITE_API_BASE_URL=/api), proxied by Vite in dev and Caddy in production.
+모든 라우트는 /api 아래에 둔다. 그래서 프론트엔드는 같은 출처의 단일 베이스
+(VITE_API_BASE_URL=/api)를 사용하며, 개발에서는 Vite, 운영에서는 Caddy가 프록시한다.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,8 +13,8 @@ settings = get_settings()
 
 app = FastAPI(title="Tree for Study API", version="0.0.0")
 
-# Same-origin in production (Caddy) / dev (Vite proxy); CORS allows a direct
-# cross-origin frontend only for local convenience.
+# 운영(Caddy) / 개발(Vite 프록시)에서는 같은 출처이다. CORS는 로컬 편의를 위해
+# 직접 교차 출처로 접근하는 프론트엔드만 허용한다.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.app_origin],

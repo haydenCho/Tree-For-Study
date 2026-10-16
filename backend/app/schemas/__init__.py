@@ -1,1 +1,1 @@
-"""Pydantic request/response schemas. Populated from stage 1."""
+"""Pydantic 요청/응답 스키마. 1단계부터 채운다."""

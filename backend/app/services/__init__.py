@@ -1,1 +1,1 @@
-"""Business logic (auth, sessions/reward math, placement, attendance). Populated from stage 1."""
+"""비즈니스 로직(인증, 세션/보상 계산, 배치, 출석). 1단계부터 채운다."""

@@ -1,4 +1,4 @@
-# Pinned for reproducible builds. Bump deliberately.
+# 재현 가능한 빌드를 위해 버전 고정. 업그레이드는 의도적으로.
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 pydantic==2.10.4
@@ -10,7 +10,7 @@ pyjwt==2.10.1
 pwdlib[argon2]==0.2.1
 python-multipart==0.0.20
 
-# Dev / test
+# 개발 / 테스트
 pytest==8.3.4
 pytest-asyncio==0.25.0
 httpx==0.28.1

@@ -1,1 +1,1 @@
-"""Background workers (DB-driven session expiry/completion). Populated from stage 1."""
+"""백그라운드 워커(DB 기반 세션 만료/완료 처리). 1단계부터 채운다."""

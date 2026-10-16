@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Build deps for asyncpg / argon2 wheels are prebuilt, but keep gcc available just in case.
+# asyncpg / argon2 휠은 미리 빌드돼 있지만, 혹시 몰라 curl과 빌드 도구를 둔다.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
     && rm -rf /var/lib/apt/lists/*
@@ -18,7 +18,7 @@ COPY . .
 
 EXPOSE 8000
 
-# Container-level liveness; app-level /api/ready also checks the DB.
+# 컨테이너 수준의 생존 점검. 앱 수준 /api/ready는 DB까지 확인한다.
 HEALTHCHECK --interval=15s --timeout=5s --retries=5 \
     CMD curl -fsS http://localhost:8000/api/health || exit 1
 

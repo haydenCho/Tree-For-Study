@@ -1,6 +1,6 @@
-"""Alembic environment — async engine, URL + metadata from the app.
+"""Alembic 환경 — 비동기 엔진, URL과 메타데이터를 앱에서 가져온다.
 
-No tables exist yet; stage 1 adds the first revision. Run from backend/:
+아직 테이블이 없으며 1단계에서 첫 리비전을 추가한다. backend/에서 실행:
     alembic revision --autogenerate -m "..."
     alembic upgrade head
 """
@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from app.core.config import get_settings
 from app.core.db import Base
 
-# Import model modules so their tables register on Base.metadata.
+# 모델 테이블이 Base.metadata에 등록되도록 모델 모듈을 import 한다.
 import app.models  # noqa: F401
 
 config = context.config

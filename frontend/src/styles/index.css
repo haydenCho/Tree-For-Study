@@ -1,5 +1,5 @@
-/* Minimal global styles for stage 0. The full token system (ui/tokens.css),
-   Pretendard font, and screen styles are wired in when building real screens (stage 1). */
+/* 0단계용 최소 전역 스타일. 전체 토큰 체계(ui/tokens.css), Pretendard 폰트,
+   화면별 스타일은 실제 화면을 만들 때(1단계) 연결한다. */
 :root {
   color-scheme: light;
   --forest: #4f6547;
@@ -30,3 +30,33 @@ body {
 .status { font-weight: 600; }
 .status.ok { color: #4f6547; }
 .status.fail { color: #b2432f; }
+
+/* 왼쪽 하단 개발 단계 배지 */
+.stage-badge {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1;
+  background: rgba(73, 56, 45, 0.92);
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  user-select: none;
+}
+.stage-badge__num { font-weight: 700; }
+.stage-badge__label { opacity: 0.85; }
+.stage-badge__track { display: inline-flex; gap: 4px; margin-left: 2px; }
+.stage-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+}
+.stage-badge__dot.is-done { background: #d58c36; }

@@ -1,6 +1,6 @@
-// Thin fetch wrapper. Same-origin base (/api) proxied to the backend.
-// Access JWT (stage 1) will be held in memory and attached here as a Bearer header;
-// it is never read from localStorage/sessionStorage/URL.
+// 얇은 fetch 래퍼. 같은 출처 기준 경로(/api)를 백엔드로 프록시한다.
+// 액세스 JWT(1단계)는 메모리에만 보관하고 Bearer 헤더로 붙인다.
+// localStorage/sessionStorage/URL에는 토큰을 저장하지 않는다.
 const BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 
 let accessToken = null
@@ -13,7 +13,7 @@ export async function apiFetch(path, options = {}) {
   const headers = { ...(options.headers || {}) }
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`
   const res = await fetch(`${BASE}${path}`, {
-    credentials: 'include', // send the refresh cookie on auth routes
+    credentials: 'include', // 인증 라우트에서 refresh 쿠키를 함께 전송
     ...options,
     headers,
   })

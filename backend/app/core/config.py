@@ -1,7 +1,7 @@
-"""Application settings loaded from environment / server .env.
+"""환경 변수 / 서버 .env에서 불러오는 애플리케이션 설정.
 
-Secrets (JWT_SECRET, DATABASE_URL, POSTGRES_PASSWORD) are read here and must never
-be exposed to the frontend. VITE_* values are intentionally NOT read by the backend.
+비밀값(JWT_SECRET, DATABASE_URL, POSTGRES_PASSWORD)은 여기서만 읽으며
+절대 프론트엔드로 노출하지 않는다. VITE_* 값은 의도적으로 백엔드에서 읽지 않는다.
 """
 from functools import lru_cache
 
@@ -11,10 +11,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # Database
+    # 데이터베이스
     database_url: str = "postgresql+asyncpg://tfs:@db:5432/tree_for_study"
 
-    # JWT / auth
+    # JWT / 인증
     jwt_secret: str = "dev-insecure-change-me"
     jwt_algorithm: str = "HS256"
     jwt_issuer: str = "tree-for-study"
@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     access_ttl_seconds: int = 900
     refresh_ttl_seconds: int = 604800
 
-    # Server config
+    # 서버 설정
     app_origin: str = "http://localhost:5173"
     cookie_secure: bool = False
     trusted_proxy_ips: str = ""

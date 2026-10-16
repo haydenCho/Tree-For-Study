@@ -1,13 +1,13 @@
-"""Auth primitives: Argon2id password hashing and access-JWT encode/decode.
+"""인증 기본 요소: Argon2id 비밀번호 해시와 액세스 JWT 인코드/디코드.
 
-Stage 0 provides the verified building blocks. The register/login/refresh flows that
-USE them land in stage 1. Refresh tokens are opaque random strings (handled in the
-auth service, stage 1) — only the access token is a JWT.
+0단계에서는 검증된 구성 요소만 제공한다. 이를 실제로 사용하는 가입/로그인/갱신
+흐름은 docs/10-focus-and-jwt.md에 따라 1단계에서 구현한다. refresh 토큰은
+불투명(opaque) 난수 문자열(1단계 인증 서비스에서 처리)이며 JWT는 액세스 토큰만이다.
 
-Hardening rules (docs/10-focus-and-jwt.md):
-- Pin the algorithm explicitly; never honor the token header's `alg`.
-- Verify signature + exp/nbf + issuer + audience + token_use on every request.
-- Access JWT carries NO real name / email / password / study content.
+강화 규칙(docs/10-focus-and-jwt.md):
+- 알고리즘을 명시적으로 고정한다. 토큰 헤더의 `alg`를 그대로 신뢰하지 않는다.
+- 매 요청마다 서명 + exp/nbf + issuer + audience + token_use를 검증한다.
+- 액세스 JWT에는 실명/이메일/비밀번호/공부 기록을 넣지 않는다.
 """
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -22,7 +22,7 @@ _password_hash = PasswordHash.recommended()  # Argon2id
 
 
 class TokenError(Exception):
-    """Raised when an access token fails any verification step."""
+    """액세스 토큰 검증 단계 중 하나라도 실패하면 발생한다."""
 
 
 def hash_password(plain: str) -> str:
@@ -34,7 +34,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(*, user_id: str, session_id: str) -> str:
-    """Mint a short-lived access JWT. `sub` is the immutable user id, `sid` the token session."""
+    """짧은 수명의 액세스 JWT를 발급한다. `sub`는 불변 사용자 ID, `sid`는 토큰 세션 ID."""
     now = datetime.now(timezone.utc)
     payload = {
         "sub": str(user_id),
@@ -51,12 +51,12 @@ def create_access_token(*, user_id: str, session_id: str) -> str:
 
 
 def decode_access_token(token: str) -> dict:
-    """Decode and fully verify an access JWT. Raises TokenError on any failure."""
+    """액세스 JWT를 디코드하고 완전히 검증한다. 실패 시 TokenError를 발생시킨다."""
     try:
         claims = jwt.decode(
             token,
             settings.jwt_secret,
-            algorithms=[settings.jwt_algorithm],  # pinned — header alg is ignored
+            algorithms=[settings.jwt_algorithm],  # 고정 — 헤더의 alg는 무시
             issuer=settings.jwt_issuer,
             audience=settings.jwt_audience,
             options={"require": ["exp", "iat", "nbf", "sub", "aud", "iss"]},
@@ -65,5 +65,5 @@ def decode_access_token(token: str) -> dict:
         raise TokenError(str(exc)) from exc
 
     if claims.get("token_use") != "access":
-        raise TokenError("not an access token")
+        raise TokenError("access 토큰이 아님")
     return claims

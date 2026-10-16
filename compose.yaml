@@ -1,6 +1,6 @@
-# Development stack. Vite dev server proxies /api -> backend (see vite.config.js),
-# so the browser uses same-origin VITE_API_BASE_URL=/api just like production.
-# Host ports are exposed here for local debugging only; production keeps db/backend private.
+# 개발 스택. Vite 개발 서버가 /api를 backend로 프록시한다(vite.config.js 참고).
+# 그래서 브라우저는 운영과 동일하게 같은 출처의 VITE_API_BASE_URL=/api를 쓴다.
+# 여기서 호스트 포트를 여는 것은 로컬 디버깅 용도이며, 운영은 db/backend를 비공개로 둔다.
 services:
   db:
     image: postgres:16-alpine
@@ -39,7 +39,7 @@ services:
     command: npm run dev -- --host 0.0.0.0 --port 5173
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-      # Vite dev proxy target (server-side, not bundled):
+      # Vite 개발 프록시 대상(서버 측에서만 사용, 번들에 포함되지 않음):
       BACKEND_ORIGIN: http://backend:8000
     ports:
       - "5173:5173"
