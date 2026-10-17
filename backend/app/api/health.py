@@ -4,6 +4,7 @@
 - /api/ready  — 의존성 접근 가능 (DB 왕복). compose/EC2 점검에 사용.
 """
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +19,10 @@ async def health() -> dict:
 
 
 @router.get("/ready")
-async def ready(session: AsyncSession = Depends(get_session)) -> dict:
-    await session.execute(text("SELECT 1"))
+async def ready(session: AsyncSession = Depends(get_session)):
+    try:
+        await session.execute(text("SELECT 1"))
+    except Exception:
+        # 연결 문자열·오류 원문은 응답하지 않는다.
+        return JSONResponse(status_code=503, content={"status": "not_ready", "database": "unavailable"})
     return {"status": "ready", "database": "ok"}

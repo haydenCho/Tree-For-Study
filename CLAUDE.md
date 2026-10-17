@@ -65,4 +65,5 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
       Verified 2026-10-17 (pytest 64 + Playwright 17). Details: docs/11-dev-log.md.
 - [x] Stage 3 — calendar/WBS CRUD, drag timetable, make-up, weekly review.
       Verified 2026-10-17 (pytest 71 + Playwright 25). Details: docs/11-dev-log.md.
-- [ ] Stage 4 — EC2/HTTPS, backup, integration review.
+- [x] Stage 4 — EC2/HTTPS, backup, integration review. Locally verified 2026-10-17 (prod stack via
+      Caddy, backup/restore drill, pytest 72 + Playwright 25 + prod smoke). Actual EC2 deploy: docs/12-deploy-ec2.md.

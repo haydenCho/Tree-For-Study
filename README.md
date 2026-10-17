@@ -1,30 +1,53 @@
-# Tree for Study · 기획 및 개발 전달 패키지
+# Tree for Study
 
-작성일: 2026-10-16 · 상태: 최종 검토용 제안 v1.0
+SAA 시험을 함께 준비하는 소규모 스터디(최대 10명)를 위한 공부 숲 웹앱입니다. 집중 세션을 끝까지
+마치면 개인 숲과 스터디 공동 숲에 나무가 자라고, 날짜별 계획·기록·시간표·WBS·주간 회고를 함께
+관리합니다. 소리·진동·OS 알림 없이 화면의 시각 효과만 사용합니다.
 
-이 패키지는 서비스 서버 구현물이 아닙니다. 문서, 다운로드용 디자인 시안, 재사용 가능한 UI 소스와 Claude Code 작업 지침입니다. 실제 로그인·기록 저장·알림은 개발 단계에서 연결합니다.
+- 프론트엔드: React + JavaScript + Vite (`frontend/`)
+- 백엔드: FastAPI + SQLAlchemy 2.0(async) + Alembic (`backend/`)
+- DB: PostgreSQL 16 · 운영: Docker Compose + Caddy(HTTPS) on EC2
 
-## 읽는 순서
-1. `docs/01-product-plan.md` — 서비스 전체 정책과 범위
-2. `design/wireframes.html` — PC·모바일 화면 구조
-3. `design/preview.html` — 색상 적용 디자인과 칸 클릭 배치 시연
-4. `docs/02-design-spec.md` — 화면·컴포넌트·에셋 사용법
-5. `docs/03-development-plan.md` — 단계별 검수 기준
-6. `prompts/00-setup.md` — Claude Code 개발 환경 구성 프롬프트
-7. `prompts/01-first-development.md` — 1차 개발 프롬프트
+## 문서
+| 문서 | 내용 |
+|---|---|
+| `docs/01-product-plan.md` | 기획서 v5(정책의 기준) |
+| `docs/10-focus-and-jwt.md` | 집중 화면·JWT 인증(인증 관련 최우선) |
+| `docs/03-development-plan.md` | 단계별 계획과 필수 테스트 |
+| `docs/05-library-ip.md` | 도서관 IP·프록시 설명과 현장 절차 |
+| `docs/11-dev-log.md` | 단계별 구현 체크리스트·API·검증 기록 |
+| `docs/12-deploy-ec2.md` | EC2 배포·백업/복원·운영 절차 |
+| `design/`, `ui/` | 디자인 시안과 원본 컴포넌트·에셋(참고용) |
 
-## 열기
-`design/preview.html`과 `design/wireframes.html`은 압축을 모두 풀고 브라우저에서 직접 엽니다. 인터넷이나 빌드가 필요하지 않습니다. 디자인 예시 데이터는 실제 스터디 기록이 아닙니다. 데모 데이터는 새로고침하면 초기화됩니다.
+## 로컬 개발
+```bash
+cp .env.example .env            # 비밀값(POSTGRES_PASSWORD, DATABASE_URL, JWT_SECRET)을 채운다
+docker compose up -d --build    # db + backend(시작 시 마이그레이션) + frontend(Vite)
+open http://localhost:5173      # 포트는 .env의 *_HOST_PORT로 바꿀 수 있다
+docker compose exec backend python -m app.cli create-operator --email you@example.com --real-name 홍길동
+docker compose exec backend python -m app.cli create-invite --max-uses 10
+docker compose down             # 중지(볼륨 보존). 데이터까지 지우려면 -v (주의)
+```
+- 마이그레이션 수동 실행: `docker compose exec backend alembic upgrade head`
+- 새 마이그레이션: `docker compose exec backend alembic revision --autogenerate -m "..."`
 
-`ui/`에는 원본 SVG, CSS 토큰, React JavaScript 컴포넌트가 있습니다. React 코드는 Vite 프로젝트에 복사해서 사용하는 소스이며, 이 폴더 자체가 설치 가능한 프로젝트는 아닙니다. `ui/README.md`를 참고하세요.
+## 테스트
+```bash
+docker compose run --rm --no-deps -T backend pytest -q   # 백엔드(개발 DB 서버의 *_test DB 사용, 주입 시계)
+./e2e/run.sh                                             # 브라우저 E2E(Playwright, 분리된 tfs-e2e 스택)
+docker run --rm -v "$PWD/frontend":/app -v tfs_fe_node_modules:/app/node_modules -w /app node:20-alpine \
+  sh -c "npm install && npm run build"                   # 프론트 빌드
+```
 
-## 확정 조건
-- 4~8명, PC 우선·모바일 대응, React + JavaScript + Vite, FastAPI, PostgreSQL.
-- 자율 집중, 차단 기능 없음, 일시정지·중도 종료 불이익 없음.
-- 2.5D 고정 시점, 칸 클릭 배치, 사용자 수종 편집·회전 없음.
-- Docker Compose + EC2. Claude Code는 단계별 개발 및 커밋만, push는 사용자만.
+## 운영
+`docs/12-deploy-ec2.md`를 따른다. 요약: `.env` 작성(SITE_ADDRESS, https APP_ORIGIN) →
+`docker compose -f compose.production.yaml up -d --build` → 운영자/초대 생성 → 도서관 IP 등록 →
+`infra/backup/backup.sh` cron + 주간 `restore.sh --verify`.
 
-## 검토할 제안값
-기본 타이머 50/10분, 누적 25분당 나무 1그루, 10:10까지 정상 출석, 6×6 숲 구역, 도서관 나무의 장식 조건은 제안값입니다. 모두 설정 또는 명시적인 정책 상수로 관리합니다. 이 값들은 사용자에게 확정받은 사실로 간주하지 않습니다.
+## 보안 원칙
+- 비밀값은 서버 `.env`에만. `VITE_*`는 공개 번들이므로 비밀 금지. 액세스 토큰은 브라우저 메모리에만.
+- refresh 토큰은 HttpOnly·Secure·SameSite 쿠키, DB에는 해시만. 회전·재사용 차단·로그아웃 폐기.
+- 도서관 판정은 Caddy가 전달한 주소를 신뢰 프록시 연결에서만 읽는다. DB/백엔드 포트는 외부 비공개.
 
-교재 원문과 기존 Forest 이미지 파일은 패키지에 포함하지 않았습니다. UI SVG는 이 서비스를 위한 별도 도형 소스이며 참조 화면을 복제한 이미지가 아닙니다.
+폰트: Pretendard(SIL OFL, `frontend/src/assets/fonts/LICENSE.txt`). 이모지 데이터: Unicode Emoji 18.0 / CLDR
+(`frontend/src/data/EMOJI-LICENSE.txt`).

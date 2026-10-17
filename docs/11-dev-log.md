@@ -190,3 +190,31 @@ timetable_blocks(15분 스냅·범위 CHECK), weekly_reviews.
   역방향 드래그 생성(10:00~11:15)·겹침 거부·계획 레이어 겹침 허용·블록 1시간 이동·폼 대안·새로고침 유지·Enter 수정,
   주간 회고 공개 저장·주말 보충 이월(보충 배지), 1440/390/360 가로 넘침 없음.
 - 수정한 결함: 빠른 드래그 놓기에서 React 상태가 갱신되기 전 값을 읽어 이동이 무시되던 문제(미리보기를 ref에도 보관).
+
+## 4단계 — EC2/HTTPS 준비·백업·통합 검수
+
+### 구현 체크리스트
+- [x] Caddyfile: SITE_ADDRESS로 자동 HTTPS(Let's Encrypt), http→https 리디렉트, 보안 헤더(HSTS·CSP·X-Frame-Options·nosniff·Permissions-Policy), 관리 API off, 해시 자원 장기 캐시·index.html no-cache, 접근 로그에서 쿠키·인증 헤더 제거
+- [x] 운영 compose: 고정 내부 대역(172.30.0.0/24), Caddy 고정 IP를 TRUSTED_PROXY_IPS로 주입, db/backend 호스트 포트 없음, ENVIRONMENT=production·COOKIE_SECURE=true 강제
+- [x] backend 운영 가드: 짧은 JWT_SECRET·Secure 쿠키 꺼짐·http APP_ORIGIN·신뢰 프록시 없음이면 시작 거부, 운영에서 API 문서 비공개, /api/ready 실패 시 503(오류 원문 미노출)
+- [x] 백업: infra/backup/backup.sh(pg_dump -Fc, 형식 검사, sha256, 14일 보관, 선택적 S3 업로드·SSE)
+- [x] 복원: infra/backup/restore.sh --verify(임시 DB 복원 후 행 수 확인) / --replace(RESTORE 입력 확인, 교체 전 자동 백업, backend 정지 후 복원)
+- [x] 운영 빌드 스모크 테스트(e2e/prod.config.js + e2e/prod/smoke.spec.js, 읽기 위주)
+- [x] 배포 절차 문서(docs/12-deploy-ec2.md), README 갱신, .env.example에 ENVIRONMENT·SITE_ADDRESS·BACKUP_S3_URI 추가
+- [x] 좌하단 단계 배지 4단계로 갱신
+- [ ] 실제 EC2 배포·DNS·인증서 발급(서버 접근 권한이 없어 운영자가 docs/12 절차로 수행)
+- [ ] 도서관 현장 IP 확인·등록(현장 절차, docs/05)
+- [ ] S3 백업 업로드 실제 확인(IAM Role 필요)
+
+### 검증 기록 — 2026-10-17 (로컬에서 운영 스택을 별도 포트로 띄워 확인)
+- 운영 스택(compose.production.yaml, SITE_ADDRESS=localhost → Caddy 내부 CA HTTPS): /api/ready 200, SPA 경로 폴백 200,
+  http → https 308, 보안 헤더 적용, /api/docs 404, backend·db 호스트 포트 없음.
+- Caddy 경유 로그인: refresh 쿠키 Secure·HttpOnly·Path=/api/auth 확인, 다른 Origin refresh 403, 정상 refresh 200.
+- 위조 X-Forwarded-For(203.0.113.77) 전송 → 진단 API가 실제 접속 주소(도커 게이트웨이)를 관측, 위조 값 무시.
+- 재시작 복구: 60분 세션 진행 중 backend 재시작 → 목표 시각 경과 후 워커가 완료 확정(나무 3, 공동 숲 배치 3).
+- 백업 → restore --verify: 행 수 일치(users 1, focus_sessions 1, trees 3, community_placements 3, daily_entries 1, alembic 0003).
+- restore --replace: 변경한 데이터가 덤프 시점으로 되돌아가고 /api/ready 정상.
+- 운영 빌드 브라우저 스모크 1개 통과: 로그인·대시보드·광장·캘린더·기록·이모지 지연 청크·Pretendard 로드·새로고침 로그인 유지, 콘솔/CSP 오류 없음.
+- 무음·저장소 점검: 프론트/백엔드 소스에 Audio·vibrate·Notification·PushManager·serviceWorker 사용 없음, 토큰을 localStorage/sessionStorage에 저장하지 않음.
+- 최종 회귀: 백엔드 pytest 72개 통과, Playwright E2E 25개 통과(1·2·3단계 전체).
+- 점검용 로컬 운영 스택과 테스트 덤프는 확인 후 삭제했다.

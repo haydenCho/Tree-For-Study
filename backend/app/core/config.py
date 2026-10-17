@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # 동시 refresh(여러 탭) 경합을 탈취로 오인하지 않기 위한 짧은 유예(초)
     refresh_race_grace_seconds: int = 10
 
+    # 실행 환경: development / production. production이면 시작 시 안전 설정을 강제한다.
+    environment: str = "development"
+
     # 서버 설정
     # 쉼표로 여러 출처를 허용할 수 있다. CSRF Origin 검사에도 사용한다.
     app_origin: str = "http://localhost:5173"
@@ -45,6 +48,21 @@ class Settings(BaseSettings):
     # 백그라운드 완료 워커(테스트에서는 끈다)
     run_workers: bool = True
     worker_interval_seconds: float = 5.0
+
+    def production_problems(self) -> list[str]:
+        """운영 환경에서 허용하지 않는 설정 목록(값 자체는 출력하지 않는다)."""
+        problems = []
+        if self.environment != "production":
+            return problems
+        if len(self.jwt_secret) < 32 or "change-me" in self.jwt_secret:
+            problems.append("JWT_SECRET이 비었거나 너무 짧습니다(32자 이상 난수 필요).")
+        if not self.cookie_secure:
+            problems.append("COOKIE_SECURE=true 여야 합니다.")
+        if any(not o.startswith("https://") for o in self.app_origin_list):
+            problems.append("APP_ORIGIN은 https:// 출처여야 합니다.")
+        if not self.trusted_proxy_ip_list:
+            problems.append("TRUSTED_PROXY_IPS(Caddy 주소)가 필요합니다.")
+        return problems
 
     @property
     def trusted_proxy_ip_list(self) -> list[str]:

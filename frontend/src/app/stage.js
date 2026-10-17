@@ -9,4 +9,4 @@ export const STAGES = [
 ]
 
 // 현재 구현이 반영된 개발 단계. 다음 단계 완료 시 이 값을 올린다.
-export const currentStage = 3
+export const currentStage = 4

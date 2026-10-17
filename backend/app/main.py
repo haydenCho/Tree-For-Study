@@ -19,6 +19,10 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    problems = settings.production_problems()
+    if problems:
+        # 안전하지 않은 운영 설정이면 서버를 띄우지 않는다(비밀 값은 출력하지 않음).
+        raise RuntimeError("운영 설정 오류: " + " / ".join(problems))
     task = asyncio.create_task(completer.run_forever()) if settings.run_workers else None
     try:
         yield
@@ -29,7 +33,15 @@ async def lifespan(_: FastAPI):
                 await task
 
 
-app = FastAPI(title="Tree for Study API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="Tree for Study API",
+    version="1.0.0",
+    lifespan=lifespan,
+    # 운영에서는 API 문서 화면을 열지 않는다.
+    docs_url=None if settings.environment == "production" else "/api/docs",
+    redoc_url=None,
+    openapi_url=None if settings.environment == "production" else "/api/openapi.json",
+)
 
 # 운영(Caddy) / 개발(Vite 프록시)에서는 같은 출처이다. CORS는 로컬 편의를 위해
 # 직접 교차 출처로 접근하는 프론트엔드만 허용한다.

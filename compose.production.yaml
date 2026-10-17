@@ -1,7 +1,12 @@
 # EC2용 운영 스택. Caddy만 공개(80/443)한다. db와 backend는 호스트 포트가 없고
 # 내부 compose 네트워크에서만 접근된다. Caddy가 HTTPS를 종료하고 빌드된 프론트엔드를
-# 서빙하며 /api를 backend로 프록시한다. FastAPI는 Caddy(TRUSTED_PROXY_IPS)에서 전달된
-# 클라이언트 IP만 신뢰한다.
+# 서빙하며 /api를 backend로 프록시한다.
+#
+# 클라이언트 IP 신뢰 체인: Caddy 컨테이너에 고정 IP(172.30.0.10)를 주고 backend는 그 주소에서
+# 온 X-Forwarded-For만 신뢰한다(TRUSTED_PROXY_IPS). 네트워크 대역을 바꾸면 두 값을 함께 바꾼다.
+#
+# 실행:  docker compose -f compose.production.yaml up -d --build
+# 필수 .env: POSTGRES_PASSWORD, DATABASE_URL, JWT_SECRET, SITE_ADDRESS, APP_ORIGIN(https://도메인)
 services:
   db:
     image: postgres:16-alpine
@@ -16,6 +21,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      internal:
     restart: unless-stopped
 
   backend:
@@ -24,10 +31,15 @@ services:
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-proxy-headers"
     env_file: .env
     environment:
-      TZ: ${TZ}
+      TZ: ${TZ:-Asia/Seoul}
+      ENVIRONMENT: production
+      COOKIE_SECURE: "true"
+      TRUSTED_PROXY_IPS: 172.30.0.10
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      internal:
     restart: unless-stopped
 
   frontend:
@@ -35,17 +47,21 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
     # 빌드된 정적 산출물을 Caddy와 공유하는 볼륨으로 내보낸다.
     volumes:
       - frontend_dist:/dist
-    restart: "no"
+    networks:
+      internal:
+    restart: unless-stopped
 
   caddy:
-    image: caddy:2-alpine
+    image: caddy:2.8-alpine
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-}
     volumes:
       - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - frontend_dist:/srv/www:ro
@@ -54,7 +70,16 @@ services:
     depends_on:
       - backend
       - frontend
+    networks:
+      internal:
+        ipv4_address: 172.30.0.10
     restart: unless-stopped
+
+networks:
+  internal:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
 
 volumes:
   pgdata:
