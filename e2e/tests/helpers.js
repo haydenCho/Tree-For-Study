@@ -21,19 +21,28 @@ export async function sql(text, params = []) {
   }
 }
 
-// 진행 중 세션의 시작/구간/목표 시각을 seconds만큼 과거로 이동
+// 진행 중 세션의 시작/구간/목표 시각을 seconds만큼 과거로 이동.
+// 완료 워커가 중간 상태를 보지 않도록 두 UPDATE를 한 트랜잭션으로 묶는다.
 export async function backdateSession(sessionId, seconds) {
   const iv = `${seconds} seconds`
-  await sql(
-    `UPDATE focus_sessions SET started_at = started_at - $2::interval,
-       current_interval_started_at = current_interval_started_at - $2::interval,
-       target_end_at = target_end_at - $2::interval WHERE id = $1`,
-    [sessionId, iv],
-  )
-  await sql(`UPDATE focus_intervals SET started_at = started_at - $2::interval WHERE session_id = $1 AND ended_at IS NULL`, [
-    sessionId,
-    iv,
-  ])
+  const client = new pg.Client({ connectionString: dsn() })
+  await client.connect()
+  try {
+    await client.query('BEGIN')
+    await client.query(
+      `UPDATE focus_sessions SET started_at = started_at - $2::interval,
+         current_interval_started_at = current_interval_started_at - $2::interval,
+         target_end_at = target_end_at - $2::interval WHERE id = $1`,
+      [sessionId, iv],
+    )
+    await client.query(
+      `UPDATE focus_intervals SET started_at = started_at - $2::interval WHERE session_id = $1 AND ended_at IS NULL`,
+      [sessionId, iv],
+    )
+    await client.query('COMMIT')
+  } finally {
+    await client.end()
+  }
 }
 
 export async function login(page, email, password = PASSWORD) {

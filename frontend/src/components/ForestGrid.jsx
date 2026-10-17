@@ -64,6 +64,9 @@ export default function ForestGrid({
                 if (c.item) onTreeFocus?.(c.item)
                 else if (!isDisabled(c)) onCellToggle?.({ row: c.row, col: c.col })
               }}
+              // 공동 숲: 마우스 hover뿐 아니라 키보드 focus로도 같은 정보를 연다.
+              onFocus={c.item && onTreeFocus ? () => onTreeFocus(c.item) : undefined}
+              onMouseEnter={c.item && onTreeFocus ? () => onTreeFocus(c.item) : undefined}
             />
             {c.item && (
               <img

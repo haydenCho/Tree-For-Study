@@ -86,3 +86,29 @@ code { font-size: 15px; background: #fff; padding: 2px 6px; border-radius: 6px; 
   .admin-link { display: none; }
   .focus-page { min-height: 100dvh; }
 }
+
+/* 2단계: 출석·도서관·광장·캘린더 */
+.attendance-box { display: grid; justify-items: end; gap: 4px; }
+.attendance-box small { font-size: 11px; color: #686350; }
+.attendance-done { background: #e7eadb; color: var(--tf-fern); border-color: #c5ceb5; }
+.library-note { font-size: 12px; background: #f3ead2; border-radius: 10px; padding: 8px 10px; margin: 8px 0; }
+.member-card { color: var(--tf-bark); text-decoration: none; border-radius: 10px; }
+.member-card:hover { background: #eceee3; }
+.member-card strong { display: block; font-size: 14px; }
+.owner-card .avatar { display: inline-grid; vertical-align: middle; margin-right: 6px; }
+.admin-extras { margin-top: 20px; }
+.admin-extras h3 { font-size: 14px; margin: 18px 0 4px; }
+.month-nav { align-items: center; }
+.month-nav button { min-height: 34px; padding: 4px 12px; }
+.day { color: var(--tf-bark); text-decoration: none; }
+.day:hover { background: #eceee3; }
+.day.holiday small { color: #863d32; }
+.day small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.dot-public { color: var(--tf-chanterelle); font-weight: 600; }
+.wbs-row { display: block; width: 100%; text-align: left; border: 0; }
+.wbs-row.child { margin-left: 14px; width: calc(100% - 14px); }
+.wbs-row[aria-pressed='true'] { outline: 2px solid var(--tf-fern); }
+@media (max-width: 760px) {
+  .attendance-box { justify-items: start; }
+  .day small { font-size: 8px; }
+}

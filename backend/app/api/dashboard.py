@@ -3,15 +3,17 @@
 성공 집계는 '정상 완료된 세션'의 집중 구간만 한국 날짜 기준으로 나눠 더한다
 (자정을 넘는 구간은 날짜별로 분할). 포기 세션의 원시 경과는 포함하지 않는다.
 """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import active_member
 from app.core.clock import kst_day_bounds, kst_today, utcnow
 from app.core.config import get_settings
 from app.core.db import get_session
-from app.models import User
-from app.services import focus, forest, records
+from app.core.client_ip import client_ip
+from app.models import FocusSession, User
+from app.services import attendance, focus, forest, library, records
 
 router = APIRouter(tags=["dashboard"])
 settings = get_settings()
@@ -36,7 +38,7 @@ async def study() -> dict:
 
 
 @router.get("/dashboard")
-async def dashboard(user: User = Depends(active_member), db: AsyncSession = Depends(get_session)) -> dict:
+async def dashboard(request: Request, user: User = Depends(active_member), db: AsyncSession = Depends(get_session)) -> dict:
     today = kst_today()
     start, end = kst_day_bounds(today)
     active = await focus.get_active(db, user.id)
@@ -58,4 +60,18 @@ async def dashboard(user: User = Depends(active_member), db: AsyncSession = Depe
             "wiltedTrees": await focus.count_trees(db, user.id, start, end, states=("wilted",)),
         },
         "goals": [records.goal_out(g) for g in goals],
+        "attendance": await attendance.summary_for(db, user),
+        # 참고용 표시. 실제 도서관 판정은 시작 요청에서 다시 한다.
+        "libraryRecognized": await library.is_library_ip(db, client_ip(request)),
+        "members": {
+            "active": (await db.execute(select(func.count()).select_from(User).where(User.status == "active"))).scalar_one(),
+            "focusingNow": (
+                await db.execute(
+                    select(func.count())
+                    .select_from(FocusSession)
+                    .join(User, User.id == FocusSession.user_id)
+                    .where(FocusSession.status.in_(("focusing", "paused")), User.status == "active")
+                )
+            ).scalar_one(),
+        },
     }

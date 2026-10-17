@@ -93,9 +93,10 @@ async def db():
         yield session
 
 
-def make_client() -> httpx.AsyncClient:
-    transport = httpx.ASGITransport(app=fastapi_app, client=("203.0.113.9", 50000))
-    return httpx.AsyncClient(transport=transport, base_url=ORIGIN, headers={"origin": ORIGIN})
+def make_client(ip: str = "203.0.113.9", headers: dict | None = None) -> httpx.AsyncClient:
+    """ip는 ASGI 연결 상대 주소(=Caddy 없이 직접 접속했을 때의 클라이언트 주소)."""
+    transport = httpx.ASGITransport(app=fastapi_app, client=(ip, 50000))
+    return httpx.AsyncClient(transport=transport, base_url=ORIGIN, headers={"origin": ORIGIN, **(headers or {})})
 
 
 @pytest.fixture
@@ -135,9 +136,9 @@ def csrf_headers(client: httpx.AsyncClient) -> dict:
     return {"x-csrf-token": client.cookies.get("tfs_csrf", ""), "origin": ORIGIN}
 
 
-async def member_client(email: str, **kwargs) -> tuple[httpx.AsyncClient, "app.models.User"]:
+async def member_client(email: str, ip: str = "203.0.113.9", **kwargs) -> tuple[httpx.AsyncClient, "app.models.User"]:
     user = await create_user(email, **kwargs)
-    c = make_client()
+    c = make_client(ip)
     await login(c, email)
     return c, user
 

@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import admin, auth, dashboard, health, me, records, sessions
+from app.api import admin, auth, calendar, dashboard, health, me, plaza, records, sessions
 from app.core.config import get_settings
 from app.workers import completer
 
@@ -41,7 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for module in (health, auth, me, admin, sessions, dashboard, records):
+for module in (health, auth, me, admin, sessions, dashboard, records, plaza, calendar):
     app.include_router(module.router, prefix="/api")
 
 

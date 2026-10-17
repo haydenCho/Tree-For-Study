@@ -138,7 +138,7 @@ export default function DashboardPage() {
           <h1>오늘의 집중이, 숲의 한 자리가 되도록.</h1>
           <p>나무를 고르고 자리를 정한 뒤, 나만의 공부를 시작해요.</p>
         </div>
-        <DashboardExtras.Attendance />
+        <DashboardExtras.Attendance attendance={data.attendance} onChange={load} />
       </div>
 
       <div className="hero">
@@ -181,6 +181,7 @@ export default function DashboardPage() {
               ? `${speciesName(species)} · ${sizeLabel(size)} 나무 ${need}그루 · ${need}칸 필요`
               : `${FOCUS_MIN}~${FOCUS_MAX}분 사이 정수로 입력해 주세요`}
           </p>
+          <DashboardExtras.Library recognized={data.libraryRecognized} />
           {startError && (
             <p className="form-error" role="alert">
               {startError}
@@ -292,7 +293,7 @@ export default function DashboardPage() {
             기록 열기
           </Link>
         </article>
-        <DashboardExtras.Members />
+        <DashboardExtras.Members members={data.members} />
         <DashboardExtras.NextSchedule study={data.study} />
       </div>
     </section>

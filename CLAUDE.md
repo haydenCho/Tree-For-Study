@@ -61,6 +61,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
       + auth route skeleton. Docker-verified 2026-10-17 (dev + production/Caddy stacks).
 - [x] Stage 1 — invite/auth/profile, dashboard session, fixed placement, basic daily entry.
       Verified 2026-10-17 (pytest 51 + Playwright 11). Details: docs/11-dev-log.md.
-- [ ] Stage 2 — attendance, library IP, plaza, public WBS read.
+- [x] Stage 2 — attendance, library IP, plaza, public WBS read.
+      Verified 2026-10-17 (pytest 64 + Playwright 17). Details: docs/11-dev-log.md.
 - [ ] Stage 3 — calendar/WBS CRUD, drag timetable, make-up, weekly review.
 - [ ] Stage 4 — EC2/HTTPS, backup, integration review.

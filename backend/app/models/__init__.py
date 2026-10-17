@@ -2,3 +2,11 @@
 from app.models.focus import FocusInterval, FocusSession, PersonalZone, SessionPlot, Tree  # noqa: F401
 from app.models.record import DailyEntry, Goal  # noqa: F401
 from app.models.user import AuditEvent, AuthTokenSession, Invite, User  # noqa: F401
+from app.models.study import (  # noqa: F401
+    AppSetting,
+    Attendance,
+    CommunityPlacement,
+    LibraryNetwork,
+    StudyDate,
+    WbsTask,
+)
