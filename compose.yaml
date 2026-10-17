@@ -21,10 +21,13 @@ services:
 
   backend:
     build: ./backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # 시작할 때 마이그레이션을 적용한 뒤 개발 서버를 띄운다.
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --no-proxy-headers"
     env_file: .env
     environment:
       TZ: ${TZ}
+      # 개발 전용: 브라우저 E2E(Playwright 컨테이너)가 http://frontend:5173 출처로 접속한다.
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:5173},http://frontend:5173
     ports:
       - "${BACKEND_HOST_PORT:-8000}:8000"
     volumes:

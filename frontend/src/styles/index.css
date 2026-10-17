@@ -1,35 +1,7 @@
-/* 0단계용 최소 전역 스타일. 전체 토큰 체계(ui/tokens.css), Pretendard 폰트,
-   화면별 스타일은 실제 화면을 만들 때(1단계) 연결한다. */
-:root {
-  color-scheme: light;
-  --forest: #4f6547;
-  --bark: #49382d;
-  --sand: #ded9cb;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background: #ded9cb;
-  color: #49382d;
-}
-
-.stage0 {
-  max-width: 560px;
-  margin: 12vh auto;
-  padding: 2rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 28px rgba(73, 56, 45, 0.12);
-}
-
-.stage0 h1 { margin: 0 0 0.25rem; color: #4f6547; }
-.stage0 .muted { color: #899078; margin-top: 0; }
-.status { font-weight: 600; }
-.status.ok { color: #4f6547; }
-.status.fail { color: #b2432f; }
+/* 전역 스타일 진입점: 토큰 → 시안 기반 앱 스타일 → 앱 전용 보완 → 개발 단계 배지 */
+@import './tokens.css';
+@import './app.css';
+@import './app-extra.css';
 
 /* 왼쪽 하단 개발 단계 배지 */
 .stage-badge {
@@ -53,10 +25,10 @@ body {
 .stage-badge__num { font-weight: 700; }
 .stage-badge__label { opacity: 0.85; }
 .stage-badge__track { display: inline-flex; gap: 4px; margin-left: 2px; }
-.stage-badge__dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.28);
-}
+.stage-badge__dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, 0.28); }
 .stage-badge__dot.is-done { background: #d58c36; }
+/* 모바일에서는 하단 메뉴 위로 올린다 */
+@media (max-width: 760px) {
+  .stage-badge { bottom: 96px; left: 8px; font-size: 10px; padding: 4px 8px; }
+  .stage-badge__label { display: none; }
+}
