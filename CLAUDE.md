@@ -23,9 +23,6 @@ Do NOT reorganize `docs/` — files cross-reference each other by filename.
 ## 개발 규칙 (Development rules)
 - **주석은 한글로.** 모든 코드/설정 파일의 주석과 docstring은 한국어로 작성한다.
   식별자(변수·함수·클래스명)와 로그 메시지는 영어를 유지해도 된다.
-- **좌하단 단계 표시.** 앱 화면 왼쪽 하단에 현재 개발 단계 배지를 항상 띄운다.
-  구현: `frontend/src/app/stage.js`의 `currentStage` + `StageBadge.jsx`. 한 단계를
-  끝낼 때마다 `currentStage` 값을 올려 배지를 갱신한다.
 
 ## Stack decisions (fixed)
 React + Vite / FastAPI / PostgreSQL / Docker Compose + EC2 (Caddy). 10-user scale → polling

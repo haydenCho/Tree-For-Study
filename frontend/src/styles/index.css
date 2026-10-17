@@ -1,34 +1,4 @@
-/* 전역 스타일 진입점: 토큰 → 시안 기반 앱 스타일 → 앱 전용 보완 → 개발 단계 배지 */
+/* 전역 스타일 진입점: 토큰 → 시안 기반 앱 스타일 → 앱 전용 보완 */
 @import './tokens.css';
 @import './app.css';
 @import './app-extra.css';
-
-/* 왼쪽 하단 개발 단계 배지 */
-.stage-badge {
-  position: fixed;
-  left: 12px;
-  bottom: 12px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  line-height: 1;
-  background: rgba(73, 56, 45, 0.92);
-  color: #fff;
-  border-radius: 999px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-  pointer-events: none;
-  user-select: none;
-}
-.stage-badge__num { font-weight: 700; }
-.stage-badge__label { opacity: 0.85; }
-.stage-badge__track { display: inline-flex; gap: 4px; margin-left: 2px; }
-.stage-badge__dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, 0.28); }
-.stage-badge__dot.is-done { background: #d58c36; }
-/* 모바일에서는 하단 메뉴 위로 올린다 */
-@media (max-width: 760px) {
-  .stage-badge { bottom: 96px; left: 8px; font-size: 10px; padding: 4px 8px; }
-  .stage-badge__label { display: none; }
-}
