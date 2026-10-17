@@ -130,11 +130,9 @@ export default function PlazaPage() {
                     </small>
                   )}
                 </div>
-                {f.kind === 'daily' && (
-                  <Link className="button-like" to={`/members/${f.member.id}/records/${f.date}`}>
-                    열기
-                  </Link>
-                )}
+                <Link className="button-like" to={`/members/${f.member.id}/records/${f.date}`}>
+                  열기
+                </Link>
               </div>
             ))}
           </div>

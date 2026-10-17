@@ -63,5 +63,6 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
       Verified 2026-10-17 (pytest 51 + Playwright 11). Details: docs/11-dev-log.md.
 - [x] Stage 2 — attendance, library IP, plaza, public WBS read.
       Verified 2026-10-17 (pytest 64 + Playwright 17). Details: docs/11-dev-log.md.
-- [ ] Stage 3 — calendar/WBS CRUD, drag timetable, make-up, weekly review.
+- [x] Stage 3 — calendar/WBS CRUD, drag timetable, make-up, weekly review.
+      Verified 2026-10-17 (pytest 71 + Playwright 25). Details: docs/11-dev-log.md.
 - [ ] Stage 4 — EC2/HTTPS, backup, integration review.

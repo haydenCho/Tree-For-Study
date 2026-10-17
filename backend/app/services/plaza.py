@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.clock import kst_day_bounds, kst_today, utcnow
-from app.models import CommunityPlacement, DailyEntry, FocusSession, Goal, Tree, User
+from app.models import CommunityPlacement, DailyEntry, FocusSession, Goal, Tree, User, WeeklyReview
 from app.services import attendance, focus
 
 ONLINE_SECONDS = 90
@@ -143,6 +143,26 @@ async def build(db: AsyncSession) -> dict:
                     "goalsTotal": len(goals),
                 }
             )
+
+    if member_ids:
+        reviews = (
+            await db.execute(
+                select(WeeklyReview)
+                .where(
+                    WeeklyReview.is_public.is_(True),
+                    WeeklyReview.user_id.in_(member_ids),
+                    WeeklyReview.week_start >= today - timedelta(days=FEED_DAYS + 7),
+                )
+                .order_by(WeeklyReview.week_start.desc())
+                .limit(10)
+            )
+        ).scalars().all()
+        for r in reviews:
+            text = (r.good or r.next_plan or r.hard or "").strip().replace("\n", " ")
+            feed.append(
+                {"kind": "weekly", "member": public_member(by_id[r.user_id]), "date": r.week_start.isoformat(), "excerpt": text[:80]}
+            )
+        feed.sort(key=lambda f: f["date"], reverse=True)
 
     return {
         "today": today.isoformat(),

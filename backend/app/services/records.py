@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.clock import utcnow
 from app.core.errors import bad_request, not_found
 from app.models import DailyEntry, Goal, User
+from app.services import planner
 
 MAX_TEXT = 5000
 
@@ -62,6 +63,7 @@ async def entry_payload(db: AsyncSession, user_id: uuid.UUID, day: date) -> dict
         "isPublic": entry.is_public if entry else False,
         "updatedAt": entry.updated_at.isoformat() if entry else None,
         "goals": [goal_out(g) for g in goals],
+        "blocks": [planner.block_out(b) for b in await planner.blocks_for(db, user_id, day)],
     }
 
 

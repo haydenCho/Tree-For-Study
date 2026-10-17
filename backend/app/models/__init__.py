@@ -10,3 +10,4 @@ from app.models.study import (  # noqa: F401
     StudyDate,
     WbsTask,
 )
+from app.models.planner import TimetableBlock, WeeklyReview  # noqa: F401

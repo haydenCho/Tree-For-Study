@@ -54,6 +54,24 @@ function OwnRecord({ date }) {
     load()
   }, [load])
 
+  // 시간표·보충 변경은 해당 부분만 다시 읽어 작성 중인 계획/기록 초안을 지우지 않는다.
+  const reloadBlocks = useCallback(async () => {
+    try {
+      const r = await get(`/timetable-blocks?date=${date}`)
+      setEntry((en) => ({ ...en, blocks: r.items }))
+    } catch (err) {
+      toast(err.message)
+    }
+  }, [date, toast])
+  const reloadGoals = useCallback(async () => {
+    try {
+      const r = await get(`/goals?from=${date}&to=${date}`)
+      setEntry((en) => ({ ...en, goals: r.items }))
+    } catch (err) {
+      toast(err.message)
+    }
+  }, [date, toast])
+
   const set = (key) => (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
     setDraft((d) => ({ ...d, [key]: value }))
@@ -176,21 +194,25 @@ function OwnRecord({ date }) {
             </button>
           </form>
         </article>
-        <RecordsExtras.Timetable date={date} entry={entry} onChange={load} />
+        <RecordsExtras.Timetable date={date} entry={entry} onChange={reloadBlocks} />
       </div>
-      <RecordsExtras.Weekly date={date} goals={entry.goals} onChange={load} />
+      <RecordsExtras.Weekly date={date} onChange={reloadGoals} />
     </section>
   )
 }
 
 function MemberRecord({ memberId, date }) {
   const [entry, setEntry] = useState(null)
+  const [weekly, setWeekly] = useState(null)
   const [error, setError] = useState('')
   useEffect(() => {
     setEntry(null)
     get(`/members/${memberId}/daily-entries/${date}`)
       .then(setEntry)
       .catch((err) => setError(err.message))
+    get(`/members/${memberId}/weekly-reviews/${date}`)
+      .then(setWeekly)
+      .catch(() => setWeekly(null))
   }, [memberId, date])
   if (error)
     return (
@@ -242,6 +264,25 @@ function MemberRecord({ memberId, date }) {
           </article>
           <RecordsExtras.Timetable date={date} entry={entry} readOnly />
         </div>
+      )}
+      {weekly?.public && (
+        <article className="card review member-weekly">
+          <h2>공개 주간 회고 · {prettyDate(weekly.weekStart)} 주</h2>
+          <div className="three">
+            <div>
+              <h3>잘한 점</h3>
+              <p className="pre">{weekly.good || '—'}</p>
+            </div>
+            <div>
+              <h3>어려웠던 점</h3>
+              <p className="pre">{weekly.hard || '—'}</p>
+            </div>
+            <div>
+              <h3>다음 주 계획</h3>
+              <p className="pre">{weekly.nextPlan || '—'}</p>
+            </div>
+          </div>
+        </article>
       )}
     </section>
   )
